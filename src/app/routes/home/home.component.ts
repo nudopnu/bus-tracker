@@ -1,61 +1,76 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as L from "leaflet";
+import { ICONS } from '../../lib/leaflet/icons';
+import { BusStop } from '../../models/bus-stop.model';
 import { ApiService } from '../../services/api.service';
-import { Pin } from '../../models/vrt-types.model';
+import { LAYERS } from '../../lib/leaflet/layers';
 
 @Component({
-  selector: 'vrt-home',
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+    selector: 'vrt-home',
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
 
-  selected?: L.Marker;
+    map?: L.Map;
+    selected?: BusStop;
+    busStops: BusStop[] = [];
+    options: string[] = [];
 
-  constructor(private apiService: ApiService) {
-  }
+    constructor(
+        private apiService: ApiService,
+    ) { }
 
-  ngOnInit(): void {
-    const map = L.map('map').setView([49.757093, 6.633447], 13);
-    L.tileLayer('http://192.168.2.72/hot/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <a href="https://www.flaticon.com/free-icons/adress" title="adress icons">Adress icons created by Boris farias - Flaticon</a>'
-    }).addTo(map);
+    ngOnInit(): void {
+        this.map = L.map('map').setView([49.757093, 6.633447], 14);
+        LAYERS.DEFAULT.addTo(this.map);
 
-    const defaultIcon = L.icon({
-      iconUrl: 'assets/location4.png',
-      shadowUrl: 'media/marker-shadow.png',
-      iconSize: [26, 42],
-      shadowSize: [20, 30],
-      iconAnchor: [13, 42],
-    });
+        this.apiService.getStations().subscribe(res => {
+            if (!this.map) return;
+            const { pins } = res;
+            this.options = pins.map(pin => pin.desc);
+            pins.forEach(pin => {
+                let coords = pin.coords.split(',').map(parseFloat);
+                const marker = L.marker([coords[1], coords[0]], { icon: ICONS.DEFAULT }).addTo(this.map!);
+                const busStop = {
+                    coords: [coords[1], coords[0]],
+                    marker,
+                    name: pin.desc,
+                } as BusStop;
 
-    const selectedIcon = L.icon({
-      iconUrl: 'assets/location_selected.png',
-      shadowUrl: 'media/marker-shadow.png',
-      iconSize: [26, 42],
-      shadowSize: [20, 30],
-      iconAnchor: [13, 42],
-    });
+                marker.addEventListener('click', () => {
+                    this.select(busStop);
+                });
+                marker.addEventListener('dblclick', () => {
+                    this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
+                });
 
-    this.apiService.getStations().subscribe(res => {
-      console.log(res.pins);
-      res.pins.forEach(pin => {
-        let coords = pin.coords.split(',').map(parseFloat);
-        const marker = L.marker([coords[1], coords[0]], { icon: defaultIcon }).addTo(map);
-        marker.addEventListener('click', () => {
-          if (this.selected) {
-            this.selected.setIcon(defaultIcon);
-          }
-          map.flyTo([coords[1], coords[0]], map.getZoom(), { duration: .5 });
-          marker.setIcon(selectedIcon);
-          this.selected = marker;
+                this.busStops.push(busStop);
+            });
         });
-        marker.addEventListener('dblclick', () => {
-          map.flyTo([coords[1], coords[0]], 17, { duration: .5 });
-        });
-      });
-    });
-  }
+    }
+
+    private select(busStop: BusStop, zoom: boolean = false) {
+        this.deselect();
+        this.selected = busStop;
+        const { marker, coords } = busStop;
+        const targetZoom = zoom ? 17 : this.map!.getZoom();
+        marker.setIcon(ICONS.SELECTED);
+        this.map!.flyTo(coords, targetZoom, { duration: .5 });
+    }
+
+    private deselect() {
+        if (this.selected) {
+            this.selected.marker.setIcon(ICONS.DEFAULT);
+        }
+    }
+
+    onSearch(event: string) {
+        const index = this.busStops.findIndex(stop => stop.name === event);
+        if (index !== -1) {
+            const busStop = this.busStops.at(index)!;
+            this.select(busStop);
+        }
+    }
 
 }

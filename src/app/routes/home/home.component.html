@@ -1,1 +1,6 @@
-<div id="map"></div>
+<main id="main">
+    <div id="map"></div>
+    <div id="search-bar">
+        <vrt-search-bar [options]="options" (onSearch)="onSearch($event)"></vrt-search-bar>
+    </div>
+</main>

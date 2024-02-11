@@ -1,0 +1,9 @@
+<nz-input-group nzSize="large" [nzSuffix]="suffixIcon">
+    <input placeholder="Haltestelle" nz-input [(ngModel)]="inputValue" (ngModelChange)="onChange($event)"
+        [nzAutocomplete]="auto" vrtSubmit (onSubmit)="onSubmit()" />
+    <nz-autocomplete [nzDataSource]="filteredOptions" nzBackfill #auto></nz-autocomplete>
+</nz-input-group>
+
+<ng-template #suffixIcon>
+    <span nz-icon nzType="search"></span>
+</ng-template>
