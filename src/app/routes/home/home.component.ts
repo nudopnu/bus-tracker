@@ -4,6 +4,7 @@ import { ICONS } from '../../lib/leaflet/icons';
 import { BusStop } from '../../models/bus-stop.model';
 import { ApiService } from '../../services/api.service';
 import { LAYERS } from '../../lib/leaflet/layers';
+import { OPTIONS } from '../../lib/leaflet/options';
 
 @Component({
     selector: 'vrt-home',
@@ -22,7 +23,7 @@ export class HomeComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.map = L.map('map').setView([49.757093, 6.633447], 14);
+        this.map = L.map('map', OPTIONS.MAP).setView([49.757093, 6.633447], 14);
         LAYERS.DEFAULT.addTo(this.map);
 
         this.apiService.getStations().subscribe(res => {

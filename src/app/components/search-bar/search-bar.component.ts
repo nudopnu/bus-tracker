@@ -9,7 +9,7 @@ export class SearchBarComponent {
 
   @Output()
   onSearch = new EventEmitter<string>();
- 
+
   @Input()
   options: string[] = [];
   filteredOptions: string[] = [];
@@ -17,6 +17,9 @@ export class SearchBarComponent {
 
   onChange(value: string) {
     this.filteredOptions = this.options.filter(option => option.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+    if (this.filteredOptions.length === 1 && this.filteredOptions.at(0) === value) {
+      this.onSearch.emit(this.inputValue);
+    }
   }
 
   onSubmit() {
