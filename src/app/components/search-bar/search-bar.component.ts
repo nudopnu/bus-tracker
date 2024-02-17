@@ -19,6 +19,7 @@ export class SearchBarComponent {
     this.filteredOptions = this.options.filter(option => option.toLowerCase().indexOf(value.toLowerCase()) !== -1);
     if (this.filteredOptions.length === 1 && this.filteredOptions.at(0) === value) {
       this.onSearch.emit(this.inputValue);
+      this.filteredOptions = [];
     }
   }
 
