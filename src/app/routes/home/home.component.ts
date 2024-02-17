@@ -1,10 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import * as L from "leaflet";
 import { ICONS } from '../../lib/leaflet/icons';
 import { BusStop } from '../../models/bus-stop.model';
 import { ApiService } from '../../services/api.service';
 import { LAYERS } from '../../lib/leaflet/layers';
 import { OPTIONS } from '../../lib/leaflet/options';
+import { DrawerService } from '../../services/drawer.service';
+import { BusStopComponent } from '../../components/bus-stop/bus-stop.component';
 
 @Component({
     selector: 'vrt-home',
@@ -13,6 +15,8 @@ import { OPTIONS } from '../../lib/leaflet/options';
 })
 export class HomeComponent implements OnInit {
 
+    @ViewChild('icon', { read: TemplateRef }) icon!: TemplateRef<{}>;
+
     map?: L.Map;
     selected?: BusStop;
     busStops: BusStop[] = [];
@@ -20,6 +24,7 @@ export class HomeComponent implements OnInit {
 
     constructor(
         private apiService: ApiService,
+        private drawerService: DrawerService,
     ) { }
 
     ngOnInit(): void {
@@ -41,8 +46,14 @@ export class HomeComponent implements OnInit {
 
                 marker.addEventListener('click', () => {
                     this.select(busStop);
+                    this.drawerService.openComponent(BusStopComponent, {
+                        nzData: busStop,
+                        nzTitle: busStop.name,
+                        nzExtra: this.icon
+                    });
                 });
                 marker.addEventListener('dblclick', () => {
+                    // this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
                     this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
                 });
 

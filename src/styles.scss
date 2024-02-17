@@ -5,3 +5,11 @@
 body {
     margin: 0;
 }
+
+.ant-drawer {
+    pointer-events: none !important;
+}
+
+.ant-drawer-content-wrapper {
+    pointer-events: all !important;
+}

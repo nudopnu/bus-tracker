@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { ZorroModule } from './modules/zorro/zorro.module';
 import { SubmitDirective } from './directives/submit.directive';
+import { BusStopComponent } from './components/bus-stop/bus-stop.component';
 
 registerLocaleData(en);
 
@@ -22,7 +23,8 @@ registerLocaleData(en);
     AppComponent,
     HomeComponent,
     SearchBarComponent,
-    SubmitDirective
+    SubmitDirective,
+    BusStopComponent
   ],
   imports: [
     BrowserModule,
