@@ -50,7 +50,13 @@ export class HomeComponent implements OnInit {
                 });
                 marker.addEventListener('dblclick', () => {
                     // this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
-                    this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
+                    let targetCoords;
+                    if (this.drawerService.isSmallScreen) {
+                        targetCoords = this.map!.containerPointToLatLng(this.map!.latLngToContainerPoint([coords[1], coords[0]]).add(new L.Point(0, 378 / 2)));
+                    } else {
+                        targetCoords = this.map!.containerPointToLatLng(this.map!.latLngToContainerPoint([coords[1], coords[0]]).subtract(new L.Point(378 / 2, 0)));
+                    }
+                    this.map!.flyTo(targetCoords, 17, { duration: .5 });
                 });
                 this.busStops.push(busStop);
             });
