@@ -46,17 +46,12 @@ export class HomeComponent implements OnInit {
 
                 marker.addEventListener('click', () => {
                     this.select(busStop);
-                    this.drawerService.openComponent(BusStopComponent, {
-                        nzData: busStop,
-                        nzTitle: busStop.name,
-                        nzExtra: this.icon
-                    });
+
                 });
                 marker.addEventListener('dblclick', () => {
                     // this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
                     this.map!.flyTo([coords[1], coords[0]], 17, { duration: .5 });
                 });
-
                 this.busStops.push(busStop);
             });
         });
@@ -68,7 +63,18 @@ export class HomeComponent implements OnInit {
         const { marker, coords } = busStop;
         const targetZoom = zoom ? 17 : this.map!.getZoom();
         marker.setIcon(ICONS.SELECTED);
-        this.map!.flyTo(coords, targetZoom, { duration: .5 });
+        let targetCoords = coords;
+        if (this.drawerService.isSmallScreen) {
+            targetCoords = this.map!.containerPointToLatLng(this.map!.latLngToContainerPoint(coords).add(new L.Point(0, 378 / 2)));
+        } else {
+            targetCoords = this.map!.containerPointToLatLng(this.map!.latLngToContainerPoint(coords).subtract(new L.Point(378 / 2, 0)));
+        }
+        this.map!.flyTo(targetCoords, targetZoom, { duration: .5 });
+        this.drawerService.openComponent(BusStopComponent, {
+            nzData: busStop,
+            nzTitle: busStop.name,
+            nzExtra: this.icon
+        });
     }
 
     private deselect() {

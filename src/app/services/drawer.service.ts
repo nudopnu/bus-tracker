@@ -6,6 +6,7 @@ import { NzDrawerOptions, NzDrawerPlacement, NzDrawerRef, NzDrawerService } from
 })
 export class DrawerService {
 
+  isSmallScreen = false;
   private placement: NzDrawerPlacement = 'left';
   private drawerRef: NzDrawerRef | undefined;
 
@@ -13,11 +14,16 @@ export class DrawerService {
     private drawerService: NzDrawerService,
   ) {
     new ResizeObserver((callback) => {
-      const { blockSize, inlineSize } = callback[0].devicePixelContentBoxSize[0];
-      if (inlineSize < 768) {
+      const { inlineSize } = callback[0].devicePixelContentBoxSize[0];
+      this.isSmallScreen = inlineSize < 768;
+      if (this.isSmallScreen) {
         this.placement = 'bottom';
       } else {
         this.placement = 'left';
+      }
+      if (this.drawerRef) {
+        this.drawerRef.close();
+        this.drawerRef = undefined;
       }
     }).observe(document.body);
   }
@@ -28,9 +34,6 @@ export class DrawerService {
       this.drawerRef = undefined;
     }
     this.drawerRef = this.drawerService.create<T, V, string>({
-      nzTitle: 'Component',
-      nzFooter: 'Footer',
-      nzExtra: 'Extra',
       nzPlacement: this.placement,
       nzContent: component,
       nzMaskStyle: {
