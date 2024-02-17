@@ -6,4 +6,7 @@
 
 <ng-template #suffixIcon>
     <span nz-icon nzType="search"></span>
+    @if (inputValue && inputValue.length > 0) {
+    <span nz-icon nzType="close" (click)="onReset()"></span>
+    }
 </ng-template>

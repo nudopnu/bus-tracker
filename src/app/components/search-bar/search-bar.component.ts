@@ -25,4 +25,9 @@ export class SearchBarComponent {
   onSubmit() {
     this.onSearch.emit(this.inputValue);
   }
+
+  onReset() {
+    this.inputValue = "";
+    this.filteredOptions = [];
+  }
 }
