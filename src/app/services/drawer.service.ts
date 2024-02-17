@@ -14,7 +14,7 @@ export class DrawerService {
     private drawerService: NzDrawerService,
   ) {
     new ResizeObserver((callback) => {
-      const { inlineSize } = callback[0].devicePixelContentBoxSize[0];
+      const inlineSize = callback[0].target.getClientRects()[0].width;
       this.isSmallScreen = inlineSize < 768;
       if (this.isSmallScreen) {
         this.placement = 'bottom';
